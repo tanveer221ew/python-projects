@@ -34,7 +34,7 @@ root = tk.Tk()
 root.title("File Organizer Tool")
 root.geometry("400x150")
 
-label = tk.Label(root, text="Organize files by type with one click!", font=("Arial", 12))
+label = tk.Label(root, text="Organize files by type with one click", font=("Arial", 12))
 label.pack(pady=10)
 
 btn = tk.Button(root, text="Select Folder to Organize", command=organize_files, width=25, height=2)
