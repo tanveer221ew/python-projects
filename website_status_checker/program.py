@@ -16,10 +16,9 @@ try:
             try:
                 x = requests.get(url, timeout=5)
                 print(f"Connection successful. Checking {url} status…")
+                response_time = round(x.elapsed.total_seconds(), 2)
                 if x.status_code >= 200 and x.status_code <= 299:
-                    response_time = round(x.elapsed.total_seconds(), 2)
                     print(f"✅ Website is working normally (Status: {x.status_code}, Response time: {response_time}s)")
-                    # data.update({"Website": f"{url}", "Status": f"{x.status_code}", "Response Time": f"{response_time}"})
                     data["Website"].append(url)
                     data["Status"].append("Working")
                     data["Status Code"].append(x.status_code)
@@ -86,7 +85,6 @@ print("Data Saved to CSV ✅")
 
     
         
-
 
 
 

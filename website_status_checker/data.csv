@@ -1,0 +1,7 @@
+Website,Status,Status Code,Response Time
+https://www.google.com,Working,200,0.64s
+https://www.youtube.com,Working,200,0.55s
+https://www.facebook.com,Working,200,0.57s
+https://www.netflix.com,Working,200,0.93s
+https://www.ebay.com,Working,200,1.69s
+https://www.walmart.com,Working,200,0.28s
