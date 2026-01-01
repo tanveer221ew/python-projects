@@ -1,95 +1,70 @@
 import requests
-import os 
 import pandas as pd
-import math
+import os
 data = {
-    "Website": [],
-    "Status" : [],
-    "Status Code": [],
-    "Response Time": []
+    "Website name": [],
+    "Status code": [],
+    "Response time":[],
+    "Status":[]
 }
+def checkWebsite():
+    try:
+        def update_data():
+            data["Website name"].append(url)
+            data["Response time"].append(str(response_time)+"s")
+            data["Status code"].append(status_code)
+            data["Status"].append(status)
+        x = requests.get(url, timeout=5)
+        status_code = x.status_code
+        response_time = round(x.elapsed.total_seconds(), 2)
+        if 200 <= status_code <= 299:
+            status = "Working"
+            print(f"🟢 {url} is working Normaly (Status Code: {status_code}, Response Time: {response_time}s)")
+            update_data()
+        elif 300 <= status_code <= 399:
+            status = "Redirected"
+            print(f"🟢 {url} is redirected to different URL (Status Code: {status_code}, Response Time: {response_time}s)")
+            update_data()
+        elif 400 <= status_code <= 499:
+            status = "Cleint Error"
+            f"🟢 {url} Returned a cleint error (Status Code: {status_code}, Response Time: {response_time}s)"
+            update_data()
+        elif 500 <= status_code <= 599:
+            status = "Server Error"
+            f"🟢 {url} Returned a server error (Status Code: {status_code}, Response Time: {response_time}s)"
+            update_data()
+    except requests.exceptions.ConnectionError:
+        response_time = None
+        status_code = None
+        status = "Connection Error"
+        print("⛔ Failed to estabish connection with website")
+        update_data()
+    except requests.exceptions.Timeout:
+        status = "Timeout"
+        response_time = None
+        status_code = None
+        print("🔴 Website took too long to respond")
+        update_data()
+    except requests.exceptions.InvalidURL:
+        status = "Invalid Error"
+        response_time = None
+        status_code = None
+        print("❗ Maybe your url is incorrect")
+        update_data()
+
+
 try:
-    with open('website_status_checker/website_urls.txt', 'r') as file:
+    print("🔍 Starting to check websites")
+    with open("urls.txt", 'r') as file:
         content = file.readlines()
         for url in content:
-            url = url.strip()
-            try:
-                x = requests.get(url, timeout=5)
-                print(f"Connection successful. Checking {url} status…")
-                response_time = round(x.elapsed.total_seconds(), 2)
-                if x.status_code >= 200 and x.status_code <= 299:
-                    print(f"✅ Website is working normally (Status: {x.status_code}, Response time: {response_time}s)")
-                    data["Website"].append(url)
-                    data["Status"].append("Working")
-                    data["Status Code"].append(x.status_code)
-                    data["Response Time"].append(str(response_time) + "s")
-                elif x.status_code >= 300 and x.status_code <=399:
-                    print(f"✅ Website is reachable but redirected (Status: {x.status_code})")
-                    data["Website"].append(url)
-                    data["Status"].append("Working, but redirected to different URL")
-                    data["Status Code"].append(x.status_code)
-                    data["Response Time"].append(str(response_time) + "s")
-                elif x.status_code >= 400 and x.status_code <= 499:
-                    print(f"⚠️  Website returned a cleint error (Status: {x.status_code})")
-                    data["Website"].append(url)
-                    data["Status"].append("Cleint Error")
-                    data["Status Code"].append(x.status_code)
-                    data["Response Time"].append(str(response_time) + "s")
-                elif x.status_code >= 500 and x.status_code <= 599:
-                    print(f"❌ Website has a server error (Status: {x.status_code})")
-                    data["Website"].append(url)
-                    data["Status"].append("Server Error")
-                    data["Status Code"].append(x.status_code)
-                    data["Response Time"].append(str(response_time) + "s")
-            except requests.exceptions.Timeout:
-                print("⚠️ Website took too long to respond")
-            except requests.exceptions.ConnectionError:
-                print("❌ Failed to connect to the website")
-            except requests.exceptions.InvalidURL:
-                print("❌ Provided URL is invalid")
-              
+            url = url.replace("\n", "")
+            if not url.startswith("https://"):
+                url = "http://" + url
+            checkWebsite()
 except FileNotFoundError:
-    print("File containing URLs not found")                              
+    print("❌ File containing website URLs not found")
 df = pd.DataFrame(data)
-df.to_csv("website_status_checker\data.csv", index=False)
-print("Data Saved to CSV ✅")
-
-# import requests
-# import os 
-# import pandas as pd
-# data = {
-#     "Website": [],
-#     "Status" : [],
-#     "Status Code": [],
-#     "Response Time": []
-# }
-# def checkWebsite(url):
-#     try:
-#         x = requests.get(url)
-#         print(x.status_code)
-#     except requests.exceptions.ConnectionError:
-#         print("Can not establish connection.")
-#     except requests.exceptions.ConnectTimeout:
-#         print("Website took too time to respond")
-#     except requests.exceptions.InvalidURL:
-#         print("Maybe you URL is incorrect")
-
-# try:
-#     with open('website_status_checker\website_urls.txt', 'r') as file:
-#         urls = file.readlines()
-#         for url in urls:
-#             checkWebsite(url)
-# except FileNotFoundError:
-#     print("File cointainig url not found")
-
-
-    
-        
-
-
-
-
-
-
-
-
+df.to_excel("data.xlsx", index=False)
+print(df)
+print("Data saved to Excel File")
